@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -111,7 +112,7 @@ private fun NonBleTagForm(onCreate: (Tag) -> Unit) {
                 readOnly = true,
                 label = { Text("Type") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeMenuExpanded) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             )
             DropdownMenu(expanded = typeMenuExpanded, onDismissRequest = { typeMenuExpanded = false }) {
                 listOf(TagType.FMDN, TagType.TRACTIVE).forEach { option ->
@@ -159,7 +160,7 @@ private fun DogRow(dog: Dog, tags: List<Tag>, allUnassignedTags: List<Tag>, onAs
                     readOnly = true,
                     label = { Text("Assign tag") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
                 )
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     allUnassignedTags.forEach { tag ->

@@ -8,6 +8,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.dogtag.DogTagApplication
 import com.dogtag.ble.BleTagReading
+import com.dogtag.ble.RangeEstimator
 import com.dogtag.ble.TagScanner
 import com.dogtag.data.model.AlertAction
 import com.dogtag.data.model.AlertTrigger
@@ -134,10 +135,20 @@ class FenceEvaluatorService : Service() {
         val lon = phoneLon ?: return
         if (lat == null) return
 
+        // Prefer this tag's own calibration (from the Calibrate tab) over the
+        // generic defaults baked into the scanner's reading.
+        val rssiAt1m = tag.rssiAt1m
+        val pathLossExponent = tag.pathLossExponent
+        val distanceM = if (rssiAt1m != null && pathLossExponent != null) {
+            RangeEstimator.estimateDistanceM(reading.rssi, rssiAt1m, pathLossExponent)
+        } else {
+            reading.distanceM
+        }
+
         val applicableFences = fences.filter { it.dogId == dogId || it.dogId == null }
         for (fence in applicableFences) {
             if (fence.id == null) continue
-            val result = BleFenceEvaluator.evaluate(lat, lon, reading.distanceM, fence)
+            val result = BleFenceEvaluator.evaluate(lat, lon, distanceM, fence)
             handleFenceResult(dog, fence, result)
         }
 
@@ -148,7 +159,7 @@ class FenceEvaluatorService : Service() {
                         tagId = tagId,
                         lat = lat,
                         lon = lon,
-                        accuracyM = reading.distanceM,
+                        accuracyM = distanceM,
                         source = LocationSource.BLE_PROXIMITY,
                     )
                 )

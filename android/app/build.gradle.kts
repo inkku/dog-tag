@@ -15,17 +15,17 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.0"
+
+        // Backend base URL for a phone talking to a service on your LAN.
+        // Override per-machine in local.properties / gradle.properties, or
+        // just edit this default for now. Declared in defaultConfig so the
+        // field exists in every build type (release builds reference it too).
+        buildConfigField("String", "BACKEND_BASE_URL", "\"http://10.0.2.2:8000/\"")
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-        }
-        debug {
-            // Backend base URL for a phone talking to a service on your LAN.
-            // Override per-machine in local.properties / gradle.properties, or
-            // just edit this default for now.
-            buildConfigField("String", "BACKEND_BASE_URL", "\"http://10.0.2.2:8000/\"")
         }
     }
 
