@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+dogtag.db
+.env
+Auth/
+.pytest_cache/
