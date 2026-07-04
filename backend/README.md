@@ -7,6 +7,11 @@ location" tier (BLE-proximity fencing is evaluated on the phone instead — see
 
 ## Run it
 
+Requires Python 3.9+ (check with `python3 --version` — macOS's built-in
+`/usr/bin/python3` is sometimes older than this; install a newer one via
+[python.org](https://www.python.org/downloads/) or `brew install python@3.12`
+if so, and use that interpreter to create the venv below).
+
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt

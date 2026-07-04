@@ -1,5 +1,6 @@
 """Fence evaluation + alert dispatch, shared by the poller and location-submit endpoint."""
 from datetime import timedelta
+from typing import Optional
 
 from sqlmodel import Session, select
 
@@ -23,7 +24,7 @@ from app.models import (
 ALERT_COOLDOWN = timedelta(minutes=5)
 
 
-def latest_location_for_dog(session: Session, dog_id: int) -> LocationSample | None:
+def latest_location_for_dog(session: Session, dog_id: int) -> Optional[LocationSample]:
     tag_ids = session.exec(select(Tag.id).where(Tag.dog_id == dog_id)).all()
     if not tag_ids:
         return None

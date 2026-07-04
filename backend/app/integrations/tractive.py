@@ -5,6 +5,7 @@ same unofficial/reverse-engineered client used by Home Assistant's Tractive
 integration. Configure TRACTIVE_EMAIL / TRACTIVE_PASSWORD to enable it.
 """
 from dataclasses import dataclass
+from typing import Optional
 
 from app.config import get_settings
 
@@ -13,7 +14,7 @@ from app.config import get_settings
 class TractiveLocation:
     lat: float
     lon: float
-    accuracy_m: float | None
+    accuracy_m: Optional[float]
 
 
 class TractiveUnavailable(RuntimeError):
@@ -42,7 +43,7 @@ class TractiveClient:
         await self._api.authenticate()
         return self._api
 
-    async def get_location(self, tracker_id: str) -> TractiveLocation | None:
+    async def get_location(self, tracker_id: str) -> Optional[TractiveLocation]:
         api = await self._ensure_client()
         tracker = api.tracker(tracker_id)
         pos = await tracker.pos_report()
@@ -56,7 +57,7 @@ class TractiveClient:
             await self._api.close()
 
 
-_client: TractiveClient | None = None
+_client: Optional[TractiveClient] = None
 
 
 def get_tractive_client() -> TractiveClient:

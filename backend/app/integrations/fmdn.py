@@ -12,6 +12,7 @@ API. Everything else in this app only depends on the small `FmdnDevice` /
 `FmdnLocation` shapes returned here.
 """
 from dataclasses import dataclass
+from typing import Optional
 
 from app.config import get_settings
 
@@ -26,7 +27,7 @@ class FmdnDevice:
 class FmdnLocation:
     lat: float
     lon: float
-    accuracy_m: float | None
+    accuracy_m: Optional[float]
 
 
 class FmdnUnavailable(RuntimeError):
@@ -58,7 +59,7 @@ class FmdnClient:
         backend = self._ensure_backend()
         return [FmdnDevice(device_id=d["id"], name=d["name"]) for d in backend.list_devices()]
 
-    def get_location(self, device_id: str) -> FmdnLocation | None:
+    def get_location(self, device_id: str) -> Optional[FmdnLocation]:
         backend = self._ensure_backend()
         raw = backend.get_location(device_id)
         if raw is None:
@@ -70,7 +71,7 @@ class FmdnClient:
         backend.play_sound(device_id)
 
 
-_client: FmdnClient | None = None
+_client: Optional[FmdnClient] = None
 
 
 def get_fmdn_client() -> FmdnClient:

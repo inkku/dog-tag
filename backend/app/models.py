@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
@@ -31,35 +32,35 @@ class AlertTrigger(str, Enum):
 
 
 class Dog(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     color: str = "#4285F4"
     created_at: datetime = Field(default_factory=utcnow)
 
 
 class Tag(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    dog_id: int | None = Field(default=None, foreign_key="dog.id")
+    id: Optional[int] = Field(default=None, primary_key=True)
+    dog_id: Optional[int] = Field(default=None, foreign_key="dog.id")
     name: str
     type: TagType
 
     # BLE identification + calibration (for RSSI -> distance estimation)
-    mac_address: str | None = None
-    rssi_at_1m: float | None = None       # measured RSSI at 1 meter, from calibration
-    path_loss_exponent: float | None = None  # environment-dependent, from calibration
+    mac_address: Optional[str] = None
+    rssi_at_1m: Optional[float] = None       # measured RSSI at 1 meter, from calibration
+    path_loss_exponent: Optional[float] = None  # environment-dependent, from calibration
 
     # FMDN identification (device id known to GoogleFindMyTools/Find Hub)
-    fmdn_device_id: str | None = None
+    fmdn_device_id: Optional[str] = None
 
     # Tractive identification (tracker id from the Tractive API)
-    tractive_tracker_id: str | None = None
+    tractive_tracker_id: Optional[str] = None
 
     created_at: datetime = Field(default_factory=utcnow)
 
 
 class Fence(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    dog_id: int | None = Field(default=None, foreign_key="dog.id")  # None = applies to all dogs
+    id: Optional[int] = Field(default=None, primary_key=True)
+    dog_id: Optional[int] = Field(default=None, foreign_key="dog.id")  # None = applies to all dogs
     name: str
     center_lat: float
     center_lon: float
@@ -69,7 +70,7 @@ class Fence(SQLModel, table=True):
 
 
 class AlertRule(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     fence_id: int = Field(foreign_key="fence.id")
     trigger: AlertTrigger
     action: AlertAction
@@ -77,17 +78,17 @@ class AlertRule(SQLModel, table=True):
 
 
 class LocationSample(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     tag_id: int = Field(foreign_key="tag.id")
     lat: float
     lon: float
-    accuracy_m: float | None = None
+    accuracy_m: Optional[float] = None
     source: LocationSource
     recorded_at: datetime = Field(default_factory=utcnow)
 
 
 class AlertEvent(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
     dog_id: int = Field(foreign_key="dog.id")
     fence_id: int = Field(foreign_key="fence.id")
     trigger: AlertTrigger
