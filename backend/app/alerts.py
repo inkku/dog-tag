@@ -1,5 +1,5 @@
 """Fence evaluation + alert dispatch, shared by the poller and location-submit endpoint."""
-from datetime import timedelta
+from datetime import timedelta, timezone
 from typing import Optional
 
 from sqlmodel import Session, select
@@ -42,7 +42,14 @@ def _recently_fired(session: Session, rule: AlertRule, dog_id: int) -> bool:
         .where(AlertEvent.trigger == rule.trigger)
         .order_by(AlertEvent.created_at.desc())
     ).first()
-    return last is not None and utcnow() - last.created_at < ALERT_COOLDOWN
+    if last is None:
+        return False
+    last_created = last.created_at
+    if last_created.tzinfo is None:
+        # SQLite round-trips datetimes as naive; utcnow() stored them in UTC,
+        # so re-attach UTC before comparing with the (aware) current time.
+        last_created = last_created.replace(tzinfo=timezone.utc)
+    return utcnow() - last_created < ALERT_COOLDOWN
 
 
 async def _dispatch(session: Session, dog: Dog, fence: Fence, rule: AlertRule) -> None:
